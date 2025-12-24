@@ -1,7 +1,6 @@
 """
 This file contain all constant the Sudoku need.
 """
-from pygame.examples.midi import BACKGROUNDCOLOR
 
 #Windows dimensions
 WINDOW_WIDTH = 600
@@ -18,3 +17,16 @@ DIFFICULTY = {
     "hard": 50,
 }
 
+#Colors for the User Interface
+BG_COLOR = 0xFFFFFF#White
+GRID_COLOR = 0x000000#Black
+CASE_COLOR = 0xD3D3D3#Lightgrey
+FIXED_NUMBERS_COLOR = 0x000000
+UER_NUMBERS_COLOR = 0xADD8E6#Lightblue
+ERROR_COLOR = 0xFF0000#Red
+BUTTON_COLOR = 0x90EE90#Lightgreen
+SELECTED_CASE_COLOR = 0xADD8E6
+FONT_COLOR = 0xFFFFFF
+
+#Font
+FONT_SIZE = 10
