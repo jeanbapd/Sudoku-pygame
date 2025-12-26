@@ -29,3 +29,8 @@ class Grid:
 
         self.selected = None
         self.errors = []
+
+    def select_cell(self,row,col):
+
+        if 0 <= row < 9 and 0 <= col < 9:
+            self.selected = (row,col)

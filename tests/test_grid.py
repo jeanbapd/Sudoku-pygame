@@ -13,3 +13,8 @@ print("Grid created")
 
 grid.generate_new_game("hard")
 print("Grid created")
+
+print("Test 3: Select cells")
+grid.select_cell(0,0)
+assert grid.selected == (0,0),"Selected cell should be (0,0)"
+print("The selection works")
