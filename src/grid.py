@@ -1,3 +1,6 @@
+"""
+File who represent the grid logic
+"""
 import pygame
 
 import src.generator
@@ -31,6 +34,20 @@ class Grid:
         self.errors = []
 
     def select_cell(self,row,col):
-
+        """
+        Select a cell
+        :param row: The row of the cell
+        :param col: The column of the cell
+        :return: None
+        """
         if 0 <= row < 9 and 0 <= col < 9:
             self.selected = (row,col)
+
+    def is_original(self,row,col):
+        """
+        Verify if the cell is original
+        :param row: The row of the cell
+        :param col: The column of the cell
+        :return: True if cell is original, False otherwise
+        """
+        return self.original[row][col] != 0
