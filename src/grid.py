@@ -60,3 +60,17 @@ class Grid:
         self.selected = None
         self.errors = []
         self.grid = src.generator.copy_grid(self.original)
+
+    def clear_cells(self):
+        """
+        Clear the cell selected
+        :return: None
+        """
+        if self.selected is None:#Check if cell is selected
+            return
+
+        if not self.is_original(*self.selected):
+            self.grid[self.selected[0]][self.selected[1]] = 0
+
+            if self.selected in self.errors:#Remove from list of error if exist
+                self.errors.remove(self.selected)
