@@ -91,3 +91,32 @@ class Grid:
 
             return True
         return False
+
+    def place_number(self,num):
+        """
+        Place a number in the selected cell
+        :param num: The number to be placed
+        :return: True if the number is placed, False otherwise
+        """
+        if self.selected is None:#Check if a cell is selected
+            return False
+
+        row, col = self.selected
+
+        if self.is_original(row,col):#Check if the cell is not original
+            return False
+
+        self.grid[row][col] = num
+        # Validate the movement
+        if not src.solver.is_valid(self.grid,row,col):
+            #Add to the errors list if invalid
+            if (row,col) not in self.errors:
+                self.errors.append((row,col))
+
+            return False
+        else:
+            #Remove from the errors list if now valid
+            if (row,col) in self.errors:
+
+                self.errors.remove((row,col))
+            return True
