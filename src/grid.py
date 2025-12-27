@@ -51,3 +51,12 @@ class Grid:
         :return: True if cell is original, False otherwise
         """
         return self.original[row][col] != 0
+
+    def reset(self):
+        """
+        Reset the grid
+        :return: None
+        """
+        self.selected = None
+        self.errors = []
+        self.grid = src.generator.copy_grid(self.original)
