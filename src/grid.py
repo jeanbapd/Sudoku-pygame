@@ -5,6 +5,8 @@ import pygame
 
 import src.generator
 import src.solver
+import src.constant
+
 class Grid:
     """
     Class to represent a grid
@@ -139,3 +141,17 @@ class Grid:
                 if solution[row][col] != self.grid[row][col]:
                     return False
         return True
+
+    def get_cell_from_pos(self, pos):
+        """
+        Convert a mouse position to a coordinate cell
+        :param pos: Tuple (x,y) of the mouse position
+        :return: (row, col) or None if no cell found
+        """
+        x, y = pos
+
+        if x < src.constant.WINDOW_WIDTH and y < src.constant.WINDOW_HEIGHT:
+            col = x // src.constant.CELL_SIZE
+            row = y // src.constant.CELL_SIZE
+            return (row, col)
+        return None
