@@ -4,6 +4,7 @@ File who represent the grid logic
 import pygame
 
 import src.generator
+import src.solver
 class Grid:
     """
     Class to represent a grid
@@ -74,3 +75,19 @@ class Grid:
 
             if self.selected in self.errors:#Remove from list of error if exist
                 self.errors.remove(self.selected)
+
+    def solve_grid(self):
+        """
+        Solve the grid
+        :return: True if the grid is solved, False otherwise
+        """
+        grid_copy = src.generator.copy_grid(self.grid)
+
+        if src.solver.solve(grid_copy):
+
+            self.grid = src.generator.copy_grid(grid_copy)
+
+            self.errors = []
+
+            return True
+        return False
