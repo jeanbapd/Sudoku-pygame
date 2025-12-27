@@ -5,6 +5,8 @@ import pygame
 
 import src.generator
 import src.solver
+import src.constant
+
 class Grid:
     """
     Class to represent a grid
@@ -139,3 +141,67 @@ class Grid:
                 if solution[row][col] != self.grid[row][col]:
                     return False
         return True
+
+    def get_cell_from_pos(self, pos):
+        """
+        Convert a mouse position to a coordinate cell
+        :param pos: Tuple (x,y) of the mouse position
+        :return: (row, col) or None if no cell found
+        """
+        x, y = pos
+
+        if x < src.constant.WINDOW_WIDTH and y < src.constant.WINDOW_HEIGHT:
+            col = x // src.constant.CELL_SIZE
+            row = y // src.constant.CELL_SIZE
+            return (row, col)
+        return None
+
+    def draw(self, screen):
+
+        screen.fill(src.constant.BG_COLOR)
+
+        for row in range(9):
+            for col in range(9):
+
+                x = col * src.constant.CELL_SIZE
+                y = row * src.constant.CELL_SIZE
+
+                rect = pygame.Rect(x, y, src.constant.CELL_SIZE, src.constant.CELL_SIZE)
+
+                if self.selected and self.selected == (row, col):#Highlight selected cell with SELECTED_CASE_COLOR
+                    pygame.draw.rect(screen, src.constant.SELECTED_CASE_COLOR, rect)
+
+                if (row,col) in self.errors:#Highlight error cells with light red background
+                    pygame.draw.rect(screen, 0xFFC8C8, rect)
+
+                pygame.draw.rect(screen, src.constant.CASE_COLOR, rect,1)
+
+        for i in range(10):
+            thickness = 4 if i%3 == 0 else 1
+
+            #Horizontal lines
+            pygame.draw.line(screen,src.constant.GRID_COLOR,(0,i*src.constant.CELL_SIZE),(src.constant.WINDOW_WIDTH,i*src.constant.CELL_SIZE),thickness)
+
+            #Vertical lines
+            pygame.draw.line(screen,src.constant.GRID_COLOR,(i * src.constant.CELL_SIZE,0),(i * src.constant.CELL_SIZE,src.constant.WINDOW_WIDTH),thickness)
+
+            pygame.draw.rect(screen,src.constant.GRID_COLOR,(0,0,src.constant.WINDOW_WIDTH,src.constant.WINDOW_HEIGHT),4)
+            #Number rendering
+            font = pygame.font.Font(None,src.constant.FONT_SIZE)
+
+            for row in range(9):
+                for col in range(9):
+                    num = self.grid[row][col]
+
+                    if num != 0:
+                        x = col * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
+                        y = row * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
+
+                        if self.is_original(row,col):
+                            color = src.constant.FIXED_NUMBERS_COLOR
+                        else:
+                            color = src.constant.UER_NUMBERS_COLOR
+
+                        text = font.render(str(num), True, color)
+                        text_rect = text.get_rect(center=(x,y))
+                        screen.blit(text, text_rect)
