@@ -108,7 +108,7 @@ class Grid:
 
         self.grid[row][col] = num
         # Validate the movement
-        if not src.solver.is_valid(self.grid,row,col):
+        if not src.solver.is_valid(self.grid,num,row,col):
             #Add to the errors list if invalid
             if (row,col) not in self.errors:
                 self.errors.append((row,col))

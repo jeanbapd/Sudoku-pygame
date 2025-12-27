@@ -8,8 +8,8 @@ def find_empty(grid):
     :param grid: The grid of cells
     :return: Returns the empty cell or None if no cell exists
     """
-    for row in grid:
-        for col in row:
+    for row in range(9):
+        for col in range(9):
             if grid[row][col] == 0:
                 return (row, col)
     return None
