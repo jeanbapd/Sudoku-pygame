@@ -120,3 +120,22 @@ class Grid:
 
                 self.errors.remove((row,col))
             return True
+
+    def is_completed(self):
+        """
+        Check if the grid is completed and valid
+        :return: True if the grid is resolved correctly, False otherwise
+        """
+        if src.solver.find_empty(self.grid) is None:#Check if an empty cell exists
+            return False
+
+        if len(self.errors)>0:
+            return False
+
+        solution = src.solver.solve(self.original)
+        #Check if the current grid is the solution
+        for row in range(9):
+            for col in range(9):
+                if solution[row][col] != self.grid[row][col]:
+                    return False
+        return True
