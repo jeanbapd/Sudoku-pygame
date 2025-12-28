@@ -128,19 +128,16 @@ class Grid:
         Check if the grid is completed and valid
         :return: True if the grid is resolved correctly, False otherwise
         """
-        if src.solver.find_empty(self.grid) is None:#Check if an empty cell exists
+        if src.solver.find_empty(self.grid) is not None:#Check if an empty cell exists
             return False
 
         if len(self.errors)>0:
             return False
 
-        solution = src.solver.solve(self.original)
-        #Check if the current grid is the solution
-        for row in range(9):
-            for col in range(9):
-                if solution[row][col] != self.grid[row][col]:
-                    return False
-        return True
+        solution = src.generator.copy_grid(self.original)
+        if not src.solver.solve(solution):
+            return False
+        return self.grid == solution
 
     def get_cell_from_pos(self, pos):
         """
@@ -150,7 +147,7 @@ class Grid:
         """
         x, y = pos
 
-        if x < src.constant.WINDOW_WIDTH and y < src.constant.WINDOW_HEIGHT:
+        if 0 <= x < src.constant.WINDOW_WIDTH and 0 <= y < src.constant.WINDOW_HEIGHT:
             col = x // src.constant.CELL_SIZE
             row = y // src.constant.CELL_SIZE
             return (row, col)
