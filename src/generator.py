@@ -31,21 +31,21 @@ def fill_grid(grid):
     :param grid: Grid of cells initialize to zero
     :return: True if grid is filled
     """
-    for row in grid:
-        for col in row:
+    for row in range(9):
+        for col in range(9):
+            if grid[row][col] == 0:
+                num = list(range(1,10))
+                rnd.shuffle(num)
 
-            num = list(range(1,10))
-            rnd.shuffle(num)
+                for n in num:
+                    if src.solver.is_valid(grid,n,row,col):
+                        grid[row][col] = n
 
-            for n in num:
-                if src.solver.is_valid(grid,n,row,col):
-                    grid[row][col] = n
+                        if fill_grid(grid):
+                            return True
 
-                    if fill_grid(grid):
-                        return True
-
-                    grid[row][col] = 0
-            return False
+                        grid[row][col] = 0
+                return False
 
     return True
 

@@ -8,8 +8,8 @@ def find_empty(grid):
     :param grid: The grid of cells
     :return: Returns the empty cell or None if no cell exists
     """
-    for row in grid:
-        for col in row:
+    for row in range(9):
+        for col in range(9):
             if grid[row][col] == 0:
                 return (row, col)
     return None
@@ -23,19 +23,24 @@ def is_valid(grid,num,row,col):
     :param col: Position of cell in grid
     :return: True if the cell placement is valid, False otherwise
     """
-    valid_mv = True
+    for c in range(9):
+        if c != col and grid[row][c] == num:
+            return False
 
-    if grid[row].count(num) > 1 or grid[:][col].count(num) > 1:
-        valid_mv = False
+    for r in range(9):
+        if r != row and grid[r][col] == num:
+            return False
+
+
 
     box_row = (row // 3) * 3
     box_col = (col // 3) * 3
     for r in range(box_row,box_row + 3):#Check if
         for c in range(box_col,box_col + 3):
             if grid[r][c] == num and (r,c) != (row,col):
-                valid_mv = False
+                return False
 
-    return valid_mv
+    return True
 
 def solve(grid):
     """
