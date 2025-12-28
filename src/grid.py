@@ -161,8 +161,8 @@ class Grid:
         font = pygame.font.Font(None, src.constant.FONT_SIZE)
 
         grid_px = src.constant.CELL_SIZE * 9
-        offset_x = (src.constant.WINDOW_WIDTH - grid_px) // 2
-        offset_y = 0
+        offset_x = (src.constant.WINDOW_WIDTH - grid_px) // 2 - 1
+        offset_y = offset_x
         for row in range(9):
             for col in range(9):
 
@@ -178,7 +178,6 @@ class Grid:
                 elif self.selected and self.selected == (row, col):#Highlight selected cell with SELECTED_CASE_COLOR
                     pygame.draw.rect(screen, src.constant.SELECTED_CASE_COLOR, rect)
 
-                pygame.draw.rect(screen, src.constant.CASE_COLOR, rect,2)
 
         for i in range(10):
             thickness = 4 if i%3 == 0 else 1
