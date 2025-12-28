@@ -157,48 +157,56 @@ class Grid:
 
         screen.fill(src.constant.BG_COLOR)
 
+        # Number rendering
+        font = pygame.font.Font(None, src.constant.FONT_SIZE)
+
+        grid_px = src.constant.CELL_SIZE * 9
+        offset_x = (src.constant.WINDOW_WIDTH - grid_px) // 2
+        offset_y = 0
         for row in range(9):
             for col in range(9):
 
-                x = col * src.constant.CELL_SIZE
-                y = row * src.constant.CELL_SIZE
+                x = offset_x + col * src.constant.CELL_SIZE
+                y = offset_y + row * src.constant.CELL_SIZE
 
                 rect = pygame.Rect(x, y, src.constant.CELL_SIZE, src.constant.CELL_SIZE)
 
-                if self.selected and self.selected == (row, col):#Highlight selected cell with SELECTED_CASE_COLOR
-                    pygame.draw.rect(screen, src.constant.SELECTED_CASE_COLOR, rect)
+                pygame.draw.rect(screen, src.constant.CASE_COLOR, rect)
 
                 if (row,col) in self.errors:#Highlight error cells with light red background
-                    pygame.draw.rect(screen, 0xFFC8C8, rect)
+                    pygame.draw.rect(screen, src.constant.EROR_BG_COLOR, rect)
+                elif self.selected and self.selected == (row, col):#Highlight selected cell with SELECTED_CASE_COLOR
+                    pygame.draw.rect(screen, src.constant.SELECTED_CASE_COLOR, rect)
 
-                pygame.draw.rect(screen, src.constant.CASE_COLOR, rect,1)
+                pygame.draw.rect(screen, src.constant.CASE_COLOR, rect,2)
 
         for i in range(10):
             thickness = 4 if i%3 == 0 else 1
 
             #Horizontal lines
-            pygame.draw.line(screen,src.constant.GRID_COLOR,(0,i*src.constant.CELL_SIZE),(src.constant.WINDOW_WIDTH,i*src.constant.CELL_SIZE),thickness)
+            pygame.draw.line(screen,src.constant.GRID_COLOR,(offset_x,offset_y + i*src.constant.CELL_SIZE),(offset_x + grid_px,offset_y + i*src.constant.CELL_SIZE),thickness)
 
             #Vertical lines
-            pygame.draw.line(screen,src.constant.GRID_COLOR,(i * src.constant.CELL_SIZE,0),(i * src.constant.CELL_SIZE,src.constant.WINDOW_WIDTH),thickness)
+            pygame.draw.line(screen,src.constant.GRID_COLOR,(offset_x + i * src.constant.CELL_SIZE,offset_y),(offset_x + i * src.constant.CELL_SIZE,offset_y + grid_px),thickness)
 
-            pygame.draw.rect(screen,src.constant.GRID_COLOR,(0,0,src.constant.WINDOW_WIDTH,src.constant.WINDOW_HEIGHT),4)
-            #Number rendering
-            font = pygame.font.Font(None,src.constant.FONT_SIZE)
+        pygame.draw.rect(screen,src.constant.GRID_COLOR,(offset_x,offset_y,grid_px,grid_px),4)
 
-            for row in range(9):
-                for col in range(9):
-                    num = self.grid[row][col]
 
-                    if num != 0:
-                        x = col * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
-                        y = row * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
+        for row in range(9):
+            for col in range(9):
+                num = self.grid[row][col]
 
-                        if self.is_original(row,col):
-                            color = src.constant.FIXED_NUMBERS_COLOR
-                        else:
-                            color = src.constant.UER_NUMBERS_COLOR
+                if num != 0:
+                    x = offset_x + col * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
+                    y = offset_y + row * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
 
-                        text = font.render(str(num), True, color)
-                        text_rect = text.get_rect(center=(x,y))
-                        screen.blit(text, text_rect)
+                    if (row,col) in self.errors:
+                        color = src.constant.ERROR_COLOR
+                    elif self.is_original(row,col):
+                        color = src.constant.FIXED_NUMBERS_COLOR
+                    else:
+                        color = src.constant.UER_NUMBERS_COLOR
+
+                    text = font.render(str(num), True, color)
+                    text_rect = text.get_rect(center=(x,y))
+                    screen.blit(text, text_rect)

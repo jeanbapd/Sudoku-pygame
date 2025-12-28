@@ -3,8 +3,8 @@ This file contain all constant the Sudoku need.
 """
 
 #Windows dimensions
-WINDOW_WIDTH = 600
-WINDOW_HEIGHT = 650
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 850
 
 #Grid size
 GRID_SIZE = 9 #Number of cell in a  row and a column
@@ -27,6 +27,6 @@ ERROR_COLOR = 0xFF0000#Red
 BUTTON_COLOR = 0x90EE90#Lightgreen
 SELECTED_CASE_COLOR = 0xADD8E6
 FONT_COLOR = 0xFFFFFF
-
+EROR_BG_COLOR = 0xFFC8C8
 #Font
 FONT_SIZE = 23
