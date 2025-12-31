@@ -1,3 +1,5 @@
+from pyexpat.errors import messages
+
 import pygame
 
 import sys
@@ -38,6 +40,8 @@ def main():
 
     new_button,check_button,solve_button,restart_button = buttons
 
+    message = ""
+    message_timer = 0
 
     running = True
     while running:
@@ -52,15 +56,23 @@ def main():
 
                     if new_button.is_clicked(pos):
                         game.generate_new_game()
+                        message = "New Game is STARTED"
+                        message_timer += 100
                     elif check_button.is_clicked(pos):
                         if game.is_completed():
-                            print("WIN")
+                            message = "Congratulations! You have completed the SUDOKU!"
+                            message_timer += 100
                         else:
-                            print("LOSE")
+                            message = "Not yet completed or errors present"
+                            message_timer += 100
                     elif solve_button.is_clicked(pos):
                         game.solve_grid()
+                        message = "Sudoku has been solved and it is the solution!"
+                        message_timer += 100
                     elif restart_button.is_clicked(pos):
                         game.reset()
+                        message = "Restarting Sudoku"
+                        message_timer += 100
                     else:
                         cell = game.get_cell_from_pos(pos)
 
@@ -105,6 +117,10 @@ def main():
                             row, col = game.selected
                             game.select_cell(row,min(8,col + 1))
 
+        if message_timer > 0:
+            message_timer -=1
+            if message_timer == 0:
+                message = ""
         pos = pygame.mouse.get_pos()
         for btn in buttons:
             btn.check_hover(pos)
@@ -112,6 +128,12 @@ def main():
 
         for button in buttons:
             button.draw(screen)
+
+        if message:
+            text =  pygame.font.SysFont("Arial",35)
+            text_surface = text.render(message,True,(255,0,0))
+            text_rect = text_surface.get_rect(center=( offset_x + GRID_PX/2,GRID_PX/2))
+            screen.blit(text_surface,text_rect)
         pygame.display.flip()#Update display
 
         clock.tick(60)
