@@ -160,7 +160,7 @@ class Grid:
         # Number rendering
         font = pygame.font.Font(None, src.constant.FONT_SIZE)
 
-        grid_px = src.constant.CELL_SIZE * 9
+        grid_px = src.constant.GRID_PX
         offset_x = (src.constant.WINDOW_WIDTH - grid_px) // 2 - 1
         offset_y = offset_x
         for row in range(9):
