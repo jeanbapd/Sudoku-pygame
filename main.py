@@ -2,9 +2,10 @@ import pygame
 
 import sys
 
+from src.button import Button
 from src.grid import Grid
 
-from src.constant import WINDOW_HEIGHT,WINDOW_WIDTH
+from src.constant import *
 
 def main():
     """
@@ -23,6 +24,21 @@ def main():
     game = Grid()#Create the grid
 
     game.generate_new_game()#Generate the game
+
+    grid_px = GRID_PX
+    offset_x = (WINDOW_WIDTH - grid_px) // 2 - 1
+
+    buttons_configs = ["New Game","Check","Solve","Restart"]
+
+    buttons = []
+
+    for i,button in enumerate(buttons_configs):
+        btn = Button(offset_x+ i * (BUTTON_WIDTH + BUTTON_SPACING),BUTTON_Y,BUTTON_WIDTH,BUTTON_HEIGHT,button,BUTTON_COLOR,BUTTON_HOVER_COLOR)
+        buttons.append(btn)
+
+    new_button,check_button,solve_button,restart_button = buttons
+
+
     running = True
     while running:
         #Handle pygame.QUIT event
@@ -33,11 +49,24 @@ def main():
                 case pygame.MOUSEBUTTONDOWN:
                     #Get mouse position
                     pos = pygame.mouse.get_pos()
-                    cell = game.get_cell_from_pos(pos)
 
-                    if cell:#Select cell if valid
-                        row, col = cell
-                        game.select_cell(row,col)
+                    if new_button.is_clicked(pos):
+                        game.generate_new_game()
+                    elif check_button.is_clicked(pos):
+                        if game.is_completed():
+                            print("WIN")
+                        else:
+                            print("LOSE")
+                    elif solve_button.is_clicked(pos):
+                        game.solve_grid()
+                    elif restart_button.is_clicked(pos):
+                        game.reset()
+                    else:
+                        cell = game.get_cell_from_pos(pos)
+
+                        if cell:#Select cell if valid
+                            row, col = cell
+                            game.select_cell(row,col)
                 case pygame.KEYDOWN:
                     #Number keys 1-9
                     match event.key:
@@ -75,7 +104,14 @@ def main():
                         case pygame.K_RIGHT if game.selected:
                             row, col = game.selected
                             game.select_cell(row,min(8,col + 1))
+
+        pos = pygame.mouse.get_pos()
+        for btn in buttons:
+            btn.check_hover(pos)
         game.draw(screen)#Call game.draw to render
+
+        for button in buttons:
+            button.draw(screen)
         pygame.display.flip()#Update display
 
         clock.tick(60)

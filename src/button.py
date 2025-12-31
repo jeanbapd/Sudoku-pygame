@@ -10,7 +10,7 @@ class Button:
     """
     Class to create a button object
     """
-    def __init__(self,x,y,width,height,text,color,hover_color,font_size):
+    def __init__(self,x,y,width,height,text,color,hover_color,font_size = 20):
         """
         Constructor for button object
         :param x: Position of the top left corner of the button
@@ -32,7 +32,7 @@ class Button:
     def draw(self,screen):
         """
         Draw the button on the screen
-        :param screen:
+        :param screen: screen where the button will be drawn
         :return: None
         """
         color = self.hover_color if self.is_hovered else self.color #Choose the color
@@ -58,7 +58,7 @@ class Button:
         """
         Function to check if the button has been clicked
         :param pos: Position of the mouse
-        :return: None
+        :return: True if the button has been clicked, False otherwise
         """
         return self.rect.collidepoint(pos)
 
