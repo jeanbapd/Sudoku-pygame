@@ -1,5 +1,6 @@
-from pyexpat.errors import messages
-
+"""
+Main file of the game.
+"""
 import pygame
 
 import sys
@@ -69,9 +70,9 @@ def main():
                         pos = pygame.mouse.get_pos()
 
                         if new_button.is_clicked(pos):
-                            game.generate_new_game()
-                            message = "New Game is STARTED"
-                            message_timer += 100
+                            current_state = STATE_MENU
+                            message_timer = 0
+                            message = ""
                         elif check_button.is_clicked(pos):
                             if game.is_completed():
                                 message = "Congratulations! You have completed the SUDOKU!"
