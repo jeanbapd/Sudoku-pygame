@@ -83,6 +83,13 @@ class Grid:
         Solve the grid
         :return: True if the grid is solved, False otherwise
         """
+        #Erase cells with errors
+        for row,col in self.errors:
+            if not self.is_original(row,col):
+                self.grid[row][col] = 0
+
+        self.errors = []
+
         grid_copy = src.generator.copy_grid(self.grid)
 
         if src.solver.solve(grid_copy):
