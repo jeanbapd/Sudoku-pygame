@@ -1,5 +1,6 @@
-from pyexpat.errors import messages
-
+"""
+Main file of the game.
+"""
 import pygame
 
 import sys
@@ -8,6 +9,8 @@ from src.button import Button
 from src.grid import Grid
 
 from src.constant import *
+from src.menu import Menu
+
 
 def main():
     """
@@ -23,9 +26,14 @@ def main():
 
     clock = pygame.time.Clock()#Create clock for FPS
 
-    game = Grid()#Create the grid
+    #Game state
+    STATE_MENU = "menu"
+    STATE_GAME = "game"
+    current_state = STATE_MENU
 
-    game.generate_new_game()#Generate the game
+    menu = Menu(screen)
+
+    game = None
 
     grid_px = GRID_PX
     offset_x = (WINDOW_WIDTH - grid_px) // 2 - 1
@@ -47,93 +55,104 @@ def main():
     while running:
         #Handle pygame.QUIT event
         for event in pygame.event.get():
-            match event.type:
-                case pygame.QUIT:
-                    running = False
-                case pygame.MOUSEBUTTONDOWN:
-                    #Get mouse position
-                    pos = pygame.mouse.get_pos()
+            if event.type == pygame.QUIT:
+                running = False
+            elif current_state == STATE_MENU:
+                difficulty = menu.handle_event(event)
+                if difficulty:
+                    game = Grid()
+                    game.generate_new_game(difficulty)
+                    current_state = STATE_GAME
+            elif current_state == STATE_GAME:
+                match event.type:
+                    case pygame.MOUSEBUTTONDOWN:
+                        #Get mouse position
+                        pos = pygame.mouse.get_pos()
 
-                    if new_button.is_clicked(pos):
-                        game.generate_new_game()
-                        message = "New Game is STARTED"
-                        message_timer += 100
-                    elif check_button.is_clicked(pos):
-                        if game.is_completed():
-                            message = "Congratulations! You have completed the SUDOKU!"
+                        if new_button.is_clicked(pos):
+                            current_state = STATE_MENU
+                            message_timer = 0
+                            message = ""
+                        elif check_button.is_clicked(pos):
+                            if game.is_completed():
+                                message = "Congratulations! You have completed the SUDOKU!"
+                                message_timer += 100
+                            else:
+                                message = "Not yet completed or errors present"
+                                message_timer += 100
+                        elif solve_button.is_clicked(pos):
+                            game.solve_grid()
+                            message = "Sudoku has been solved and it is the solution!"
+                            message_timer += 100
+                        elif restart_button.is_clicked(pos):
+                            game.reset()
+                            message = "Restarting Sudoku"
                             message_timer += 100
                         else:
-                            message = "Not yet completed or errors present"
-                            message_timer += 100
-                    elif solve_button.is_clicked(pos):
-                        game.solve_grid()
-                        message = "Sudoku has been solved and it is the solution!"
-                        message_timer += 100
-                    elif restart_button.is_clicked(pos):
-                        game.reset()
-                        message = "Restarting Sudoku"
-                        message_timer += 100
-                    else:
-                        cell = game.get_cell_from_pos(pos)
+                            cell = game.get_cell_from_pos(pos)
 
-                        if cell:#Select cell if valid
-                            row, col = cell
-                            game.select_cell(row,col)
-                case pygame.KEYDOWN:
-                    #Number keys 1-9
-                    match event.key:
-                        case pygame.K_1 | pygame.K_KP1:
-                            game.place_number(1)
-                        case pygame.K_2 | pygame.K_KP2:
-                            game.place_number(2)
-                        case pygame.K_3 | pygame.K_KP3:
-                            game.place_number(3)
-                        case pygame.K_4 | pygame.K_KP4:
-                            game.place_number(4)
-                        case pygame.K_5 | pygame.K_KP5:
-                            game.place_number(5)
-                        case pygame.K_6 | pygame.K_KP6:
-                            game.place_number(6)
-                        case pygame.K_7 | pygame.K_KP7:
-                            game.place_number(7)
-                        case pygame.K_8 | pygame.K_KP8:
-                            game.place_number(8)
-                        case pygame.K_9 | pygame.K_KP9:
-                            game.place_number(9)
-                        #Clear keys
-                        case pygame.K_BACKSPACE | pygame.K_DELETE | pygame.K_0 | pygame.K_KP0:
-                            game.clear_cells()
-                        #Arrow key
-                        case pygame.K_UP if game.selected:
-                            row, col = game.selected
-                            game.select_cell(max(0,row-1),col)
-                        case pygame.K_DOWN if game.selected:
-                            row, col = game.selected
-                            game.select_cell(min(8,row + 1),col)
-                        case pygame.K_LEFT if game.selected:
-                            row, col = game.selected
-                            game.select_cell(row,max(0,col - 1))
-                        case pygame.K_RIGHT if game.selected:
-                            row, col = game.selected
-                            game.select_cell(row,min(8,col + 1))
+                            if cell:#Select cell if valid
+                                row, col = cell
+                                game.select_cell(row,col)
+                    case pygame.KEYDOWN:
+                        #Number keys 1-9
+                        match event.key:
+                            case pygame.K_1 | pygame.K_KP1:
+                                game.place_number(1)
+                            case pygame.K_2 | pygame.K_KP2:
+                                game.place_number(2)
+                            case pygame.K_3 | pygame.K_KP3:
+                                game.place_number(3)
+                            case pygame.K_4 | pygame.K_KP4:
+                                game.place_number(4)
+                            case pygame.K_5 | pygame.K_KP5:
+                                game.place_number(5)
+                            case pygame.K_6 | pygame.K_KP6:
+                                game.place_number(6)
+                            case pygame.K_7 | pygame.K_KP7:
+                                game.place_number(7)
+                            case pygame.K_8 | pygame.K_KP8:
+                                game.place_number(8)
+                            case pygame.K_9 | pygame.K_KP9:
+                                game.place_number(9)
+                            #Clear keys
+                            case pygame.K_BACKSPACE | pygame.K_DELETE | pygame.K_0 | pygame.K_KP0:
+                                game.clear_cells()
+                            #Arrow key
+                            case pygame.K_UP if game.selected:
+                                row, col = game.selected
+                                game.select_cell(max(0,row-1),col)
+                            case pygame.K_DOWN if game.selected:
+                                row, col = game.selected
+                                game.select_cell(min(8,row + 1),col)
+                            case pygame.K_LEFT if game.selected:
+                                row, col = game.selected
+                                game.select_cell(row,max(0,col - 1))
+                            case pygame.K_RIGHT if game.selected:
+                                row, col = game.selected
+                                game.select_cell(row,min(8,col + 1))
 
-        if message_timer > 0:
-            message_timer -=1
-            if message_timer == 0:
-                message = ""
-        pos = pygame.mouse.get_pos()
-        for btn in buttons:
-            btn.check_hover(pos)
-        game.draw(screen)#Call game.draw to render
+        if current_state == STATE_MENU:
+            menu.update()
+            menu.draw()
+        elif current_state == STATE_GAME:
+            if message_timer > 0:
+                message_timer -=1
+                if message_timer == 0:
+                    message = ""
+            pos = pygame.mouse.get_pos()
+            for btn in buttons:
+                btn.check_hover(pos)
+            game.draw(screen)#Call game.draw to render
 
-        for button in buttons:
-            button.draw(screen)
+            for button in buttons:
+                button.draw(screen)
 
-        if message:
-            text =  pygame.font.SysFont("Arial",35)
-            text_surface = text.render(message,True,(255,0,0))
-            text_rect = text_surface.get_rect(center=( offset_x + GRID_PX/2,GRID_PX/2))
-            screen.blit(text_surface,text_rect)
+            if message:
+                text =  pygame.font.SysFont("Arial",35)
+                text_surface = text.render(message,True,(255,0,0))
+                text_rect = text_surface.get_rect(center=( offset_x + GRID_PX/2,GRID_PX/2))
+                screen.blit(text_surface,text_rect)
         pygame.display.flip()#Update display
 
         clock.tick(60)

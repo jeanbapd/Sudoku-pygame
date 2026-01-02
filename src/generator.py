@@ -1,5 +1,5 @@
 """
-
+File who create the SUDOKU grid
 """
 
 import random as rnd
