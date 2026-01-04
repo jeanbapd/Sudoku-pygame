@@ -3,7 +3,7 @@ File who create the SUDOKU grid
 """
 
 import random as rnd
-import src.solver
+from src.solver import is_valid
 from src.constant import DIFFICULTY
 
 def remove_numbers(grid,difficulty):
@@ -16,8 +16,8 @@ def remove_numbers(grid,difficulty):
     removed = 0
 
     while removed < difficulty:
-        row = rnd.randint(0,len(grid)-1)
-        col = rnd.randint(0,len(grid[0])-1)
+        row = rnd.randint(0, len(grid)-1)
+        col = rnd.randint(0, len(grid[0])-1)
 
         if grid[row][col] != 0:
 
@@ -38,7 +38,7 @@ def fill_grid(grid):
                 rnd.shuffle(num)
 
                 for n in num:
-                    if src.solver.is_valid(grid,n,row,col):
+                    if is_valid(grid,n,row,col):
                         grid[row][col] = n
 
                         if fill_grid(grid):
@@ -59,7 +59,7 @@ def generate_sudoku(difficulty="medium"):
 
     fill_grid(grid)
 
-    remove_numbers(grid,DIFFICULTY.get(difficulty))
+    remove_numbers(grid, DIFFICULTY.get(difficulty))
 
     return grid
 
