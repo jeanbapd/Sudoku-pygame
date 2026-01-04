@@ -1,14 +1,24 @@
 """
 Main file of the game.
 """
-import pygame
-
 import sys
+import pygame
 
 from src.button import Button
 from src.grid import Grid
 
-from src.constant import *
+from src.constant import (
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
+    GRID_PX,
+    BUTTON_WIDTH,
+    BUTTON_HEIGHT,
+    BUTTON_SPACING,
+    BUTTON_Y,
+    BUTTON_COLOR,
+    BUTTON_HOVER_COLOR,
+    MESSAGE_DURATION
+)
 from src.menu import Menu
 
 
@@ -27,9 +37,9 @@ def main():
     clock = pygame.time.Clock()#Create clock for FPS
 
     #Game state
-    STATE_MENU = "menu"
-    STATE_GAME = "game"
-    current_state = STATE_MENU
+    state_menu = "menu"
+    state_game = "game"
+    current_state = state_menu
 
     menu = Menu(screen)
 
@@ -43,7 +53,15 @@ def main():
     buttons = []
 
     for i,button in enumerate(buttons_configs):
-        btn = Button(offset_x+ i * (BUTTON_WIDTH + BUTTON_SPACING),BUTTON_Y,BUTTON_WIDTH,BUTTON_HEIGHT,button,BUTTON_COLOR,BUTTON_HOVER_COLOR)
+        btn = Button(
+            offset_x+ i * (BUTTON_WIDTH + BUTTON_SPACING),
+            BUTTON_Y,
+            BUTTON_WIDTH,
+            BUTTON_HEIGHT,
+            button,
+            BUTTON_COLOR,
+            BUTTON_HOVER_COLOR
+        )
         buttons.append(btn)
 
     new_button,check_button,solve_button,restart_button = buttons
@@ -57,37 +75,37 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif current_state == STATE_MENU:
+            elif current_state == state_menu:
                 difficulty = menu.handle_event(event)
                 if difficulty:
                     game = Grid()
                     game.generate_new_game(difficulty)
-                    current_state = STATE_GAME
-            elif current_state == STATE_GAME:
+                    current_state = state_game
+            elif current_state == state_game:
                 match event.type:
                     case pygame.MOUSEBUTTONDOWN:
                         #Get mouse position
                         pos = pygame.mouse.get_pos()
 
                         if new_button.is_clicked(pos):
-                            current_state = STATE_MENU
+                            current_state = state_menu
                             message_timer = 0
                             message = ""
                         elif check_button.is_clicked(pos):
                             if game.is_completed():
                                 message = "Congratulations! You have completed the SUDOKU!"
-                                message_timer += 100
+                                message_timer += MESSAGE_DURATION
                             else:
                                 message = "Not yet completed or errors present"
-                                message_timer += 100
+                                message_timer += MESSAGE_DURATION
                         elif solve_button.is_clicked(pos):
                             game.solve_grid()
                             message = "Sudoku has been solved and it is the solution!"
-                            message_timer += 100
+                            message_timer += MESSAGE_DURATION
                         elif restart_button.is_clicked(pos):
                             game.reset()
                             message = "Restarting Sudoku"
-                            message_timer += 100
+                            message_timer += MESSAGE_DURATION
                         else:
                             cell = game.get_cell_from_pos(pos)
 
@@ -132,10 +150,10 @@ def main():
                                 row, col = game.selected
                                 game.select_cell(row,min(8,col + 1))
 
-        if current_state == STATE_MENU:
+        if current_state == state_menu:
             menu.update()
             menu.draw()
-        elif current_state == STATE_GAME:
+        elif current_state == state_game:
             if message_timer > 0:
                 message_timer -=1
                 if message_timer == 0:
