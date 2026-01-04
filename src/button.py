@@ -1,16 +1,16 @@
 """
-Button class for Ui button
+Button class for UI button
 """
 import pygame
 
-import src.constant
-
+from src.constant import FONT_COLOR
 
 class Button:
     """
     Class to create a button object
     """
-    def __init__(self,x,y,width,height,text,color,hover_color,font_size = 20):
+    def __init__(self,x,y,width,height,text,color,hover_color,
+                 font_size = 20):
         """
         Constructor for button object
         :param x: Position of the top left corner of the button
@@ -42,7 +42,7 @@ class Button:
         pygame.draw.rect(screen,self.hover_color,self.rect,2)#Draw border
 
         #Draw text
-        text_surface = self.font.render(self.text,True,src.constant.FONT_COLOR)
+        text_surface = self.font.render(self.text,True,FONT_COLOR)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface,text_rect)
 
@@ -61,4 +61,3 @@ class Button:
         :return: True if the button has been clicked, False otherwise
         """
         return self.rect.collidepoint(pos)
-

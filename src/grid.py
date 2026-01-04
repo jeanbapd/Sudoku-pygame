@@ -3,9 +3,23 @@ File who represent the grid logic
 """
 import pygame
 
-import src.generator
-import src.solver
-import src.constant
+from src.generator import copy_grid,generate_sudoku
+from src.solver import find_empty,is_valid,solve
+from src.constant import (
+WINDOW_WIDTH,
+WINDOW_HEIGHT,
+CELL_SIZE,
+FONT_SIZE,
+GRID_PX,
+BG_COLOR,
+GRID_COLOR,
+CASE_COLOR,
+FIXED_NUMBERS_COLOR,
+USER_NUMBERS_COLOR,
+ERROR_COLOR,
+SELECTED_CASE_COLOR,
+ERROR_BG_COLOR
+)
 
 class Grid:
     """
@@ -17,7 +31,7 @@ class Grid:
 
         self.grid = [[0 for _ in range(9)] for _ in range(9)]
 
-        self.original = src.generator.copy_grid(self.grid)
+        self.original = copy_grid(self.grid)
 
         self.selected = None
 
@@ -29,9 +43,9 @@ class Grid:
         :param difficulty: The difficulty of the game
         :return: None
         """
-        self.grid = src.generator.generate_sudoku(difficulty)
+        self.grid = generate_sudoku(difficulty)
 
-        self.original = src.generator.copy_grid(self.grid)
+        self.original = copy_grid(self.grid)
 
         self.selected = None
         self.errors = []
@@ -62,7 +76,7 @@ class Grid:
         """
         self.selected = None
         self.errors = []
-        self.grid = src.generator.copy_grid(self.original)
+        self.grid = copy_grid(self.original)
 
     def clear_cells(self):
         """
@@ -90,11 +104,11 @@ class Grid:
 
         self.errors = []
 
-        grid_copy = src.generator.copy_grid(self.grid)
+        grid_copy = copy_grid(self.grid)
 
-        if src.solver.solve(grid_copy):
+        if solve(grid_copy):
 
-            self.grid = src.generator.copy_grid(grid_copy)
+            self.grid = copy_grid(grid_copy)
 
             self.errors = []
 
@@ -117,32 +131,32 @@ class Grid:
 
         self.grid[row][col] = num
         # Validate the movement
-        if not src.solver.is_valid(self.grid,num,row,col):
+        if not is_valid(self.grid,num,row,col):
             #Add to the errors list if invalid
             if (row,col) not in self.errors:
                 self.errors.append((row,col))
 
             return False
-        else:
-            #Remove from the errors list if now valid
-            if (row,col) in self.errors:
 
-                self.errors.remove((row,col))
-            return True
+        #Remove from the errors list if now valid
+        if (row,col) in self.errors:
+
+            self.errors.remove((row,col))
+        return True
 
     def is_completed(self):
         """
         Check if the grid is completed and valid
         :return: True if the grid is resolved correctly, False otherwise
         """
-        if src.solver.find_empty(self.grid) is not None:#Check if an empty cell exists
+        if find_empty(self.grid) is not None:#Check if an empty cell exists
             return False
 
         if len(self.errors)>0:
             return False
 
-        solution = src.generator.copy_grid(self.original)
-        if not src.solver.solve(solution):
+        solution = copy_grid(self.original)
+        if not solve(solution):
             return False
         return self.grid == solution
 
@@ -154,48 +168,69 @@ class Grid:
         """
         x, y = pos
 
-        if 0 <= x < src.constant.WINDOW_WIDTH and 0 <= y < src.constant.WINDOW_HEIGHT:
-            col = x // src.constant.CELL_SIZE
-            row = y // src.constant.CELL_SIZE
+        if 0 <= x < WINDOW_WIDTH and 0 <= y < WINDOW_HEIGHT:
+            col = x // CELL_SIZE
+            row = y // CELL_SIZE
             return (row, col)
         return None
 
     def draw(self, screen):
-
-        screen.fill(src.constant.BG_COLOR)
+        """
+        Draw the SUDOKU grid on screen
+        :param screen: Pygame screen surface
+        :return: None
+        """
+        screen.fill(BG_COLOR)
 
         # Number rendering
-        font = pygame.font.Font(None, src.constant.FONT_SIZE)
+        font = pygame.font.Font(None, FONT_SIZE)
 
-        grid_px = src.constant.GRID_PX
-        offset_x = (src.constant.WINDOW_WIDTH - grid_px) // 2 - 1
+        grid_px = GRID_PX
+        offset_x = (WINDOW_WIDTH - grid_px) // 2 - 1
         offset_y = offset_x
         for row in range(9):
             for col in range(9):
 
-                x = offset_x + col * src.constant.CELL_SIZE
-                y = offset_y + row * src.constant.CELL_SIZE
+                x = offset_x + col * CELL_SIZE
+                y = offset_y + row * CELL_SIZE
 
-                rect = pygame.Rect(x, y, src.constant.CELL_SIZE, src.constant.CELL_SIZE)
+                rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
 
-                pygame.draw.rect(screen, src.constant.CASE_COLOR, rect)
+                pygame.draw.rect(screen, CASE_COLOR, rect)
 
                 if (row,col) in self.errors:#Highlight error cells with light red background
-                    pygame.draw.rect(screen, src.constant.EROR_BG_COLOR, rect)
+                    pygame.draw.rect(screen, ERROR_BG_COLOR, rect)
                 elif self.selected and self.selected == (row, col):#Highlight selected cell with SELECTED_CASE_COLOR
-                    pygame.draw.rect(screen, src.constant.SELECTED_CASE_COLOR, rect)
+                    pygame.draw.rect(screen, SELECTED_CASE_COLOR, rect)
 
 
         for i in range(10):
             thickness = 4 if i%3 == 0 else 1
 
             #Horizontal lines
-            pygame.draw.line(screen,src.constant.GRID_COLOR,(offset_x,offset_y + i*src.constant.CELL_SIZE),(offset_x + grid_px,offset_y + i*src.constant.CELL_SIZE),thickness)
+            pygame.draw.line(
+                screen,
+                GRID_COLOR,
+                (offset_x,offset_y + i*CELL_SIZE),
+                (offset_x + grid_px,offset_y + i*CELL_SIZE),
+                thickness
+            )
 
             #Vertical lines
-            pygame.draw.line(screen,src.constant.GRID_COLOR,(offset_x + i * src.constant.CELL_SIZE,offset_y),(offset_x + i * src.constant.CELL_SIZE,offset_y + grid_px),thickness)
+            pygame.draw.line(
+                screen,
+                GRID_COLOR,
+                (offset_x + i * CELL_SIZE,offset_y),
+                (offset_x + i * CELL_SIZE,offset_y + grid_px),
+                thickness
+            )
 
-        pygame.draw.rect(screen,src.constant.GRID_COLOR,(offset_x,offset_y,grid_px,grid_px),4)
+        pygame.draw.rect(
+            screen,
+            GRID_COLOR,
+            (offset_x,offset_y,grid_px,grid_px),
+            4
+        )
 
 
         for row in range(9):
@@ -203,15 +238,15 @@ class Grid:
                 num = self.grid[row][col]
 
                 if num != 0:
-                    x = offset_x + col * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
-                    y = offset_y + row * src.constant.CELL_SIZE + src.constant.CELL_SIZE//2
+                    x = offset_x + col * CELL_SIZE + CELL_SIZE//2
+                    y = offset_y + row * CELL_SIZE + CELL_SIZE//2
 
                     if (row,col) in self.errors:
-                        color = src.constant.ERROR_COLOR
+                        color = ERROR_COLOR
                     elif self.is_original(row,col):
-                        color = src.constant.FIXED_NUMBERS_COLOR
+                        color = FIXED_NUMBERS_COLOR
                     else:
-                        color = src.constant.UER_NUMBERS_COLOR
+                        color = USER_NUMBERS_COLOR
 
                     text = font.render(str(num), True, color)
                     text_rect = text.get_rect(center=(x,y))
